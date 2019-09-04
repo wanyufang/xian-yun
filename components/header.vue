@@ -13,20 +13,38 @@
       </el-row>
 
       <!-- 消息按钮 -->
-      <div>
-          
-      </div>
+      <div></div>
 
       <!-- 登录跳转 -->
       <div class="login">
         <nuxt-link to="/user/login">登录/注册</nuxt-link>
       </div>
+
+      <!-- 用户名显示 -->
+      <el-dropdown v-if="$store.state.user.userInfo.token">
+        <el-row type="flex" align="middle" class="el-link">
+          <nuxt-link to="#">
+            <img src="$axios.defaults.baseURL+$store.state.user.userInfo.user.defaultAvatar" alt="">
+            {{$store.state.user.userInfo.user.nickname}}
+          </nuxt-link>
+          <i class="el-icon-caret-bottom el-icon--right"></i>
+        </el-row>
+      </el-dropdown>
     </el-row>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  data(){
+    return {
+      
+    }
+  },
+  methods: {
+
+  }
+};
 </script>
 
 <style  scoped lang="less">
@@ -69,15 +87,15 @@ export default {};
   .nuxt-link-exact-active {
     background-color: #409eff;
     color: #fff;
-    &:hover{
-        color: #fff;
+    &:hover {
+      color: #fff;
     }
   }
 }
 // 给注册登录按钮的样式
-.login{
-    &:hover{
-        color: #409eff;
-    }
+.login {
+  &:hover {
+    color: #409eff;
+  }
 }
 </style>

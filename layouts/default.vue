@@ -11,7 +11,9 @@
 
 <script>
 // 1 引入组件
+// 头部
 import Header from '@/components/header'
+// 尾部
 import Footer from '@/components/footer'
 export default {
   // 2 注册组件
