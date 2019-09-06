@@ -47,7 +47,7 @@ export default {
     submitForm() {
         // console.log(111);
         // let _this=this
-            console.log(this.$store.state);
+            // console.log(this.$store.state);
         this.$refs.form.validate((valid)=>{
             if(valid){
                 // console.log(123);

@@ -16,19 +16,26 @@
       <div></div>
 
       <!-- 登录跳转 -->
-      <div class="login">
+      <div class="login" v-if="!$store.state.user.userInfo.token">
         <nuxt-link to="/user/login">登录/注册</nuxt-link>
       </div>
 
       <!-- 用户名显示 -->
-      <el-dropdown v-if="$store.state.user.userInfo.token">
+      <el-dropdown v-else>
         <el-row type="flex" align="middle" class="el-link">
           <nuxt-link to="#">
-            <img src="$axios.defaults.baseURL+$store.state.user.userInfo.user.defaultAvatar" alt="">
+            <!-- 头像 -->
+            <img :src="$axios.defaults.baseURL+$store.state.user.userInfo.user.defaultAvatar" alt />
+            <!-- 昵称 -->
             {{$store.state.user.userInfo.user.nickname}}
           </nuxt-link>
+          <!-- 向下箭头 -->
           <i class="el-icon-caret-bottom el-icon--right"></i>
         </el-row>
+        <el-dropdown-menu>
+          <el-dropdown-item>个人中心</el-dropdown-item>
+          <el-dropdown-item @click.native="handleLogout">退出</el-dropdown-item>
+        </el-dropdown-menu>
       </el-dropdown>
     </el-row>
   </div>
@@ -36,13 +43,22 @@
 
 <script>
 export default {
-  data(){
-    return {
-      
-    }
+  data() {
+    return {};
   },
   methods: {
+    handleLogout(){
+      // console.log(this.$store);
+      // const {commit} = this.$store
+      // 可用结构将commit解构出来 也可直接使用this.$store.commit使用
+      this.$store.commit('user/cleanUserInfo')
+      // console.log(commit);
 
+      this.$message({
+        message: '退出成功',
+        type: 'success'
+      })
+    }
   }
 };
 </script>
@@ -97,5 +113,11 @@ export default {
   &:hover {
     color: #409eff;
   }
+}
+.el-dropdown img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  vertical-align: middle;
 }
 </style>
