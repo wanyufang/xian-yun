@@ -21,6 +21,7 @@
           v-model="form.departCity"
           :fetch-suggestions="querySearchAsync"
           placeholder="请搜索出发城市"
+          @blur="handleSearchBlur"
           @select="handleSearchSelect"
           class="el-autocomplete"
         ></el-autocomplete>
@@ -31,6 +32,7 @@
           v-model="form.destCity"
           :fetch-suggestions="queryArriveAsync"
           placeholder="请搜索到达城市"
+          @blur="handleArriveBlur"
           @select="handleArriveSelect"
           class="el-autocomplete"
         ></el-autocomplete>
@@ -75,15 +77,26 @@ export default {
         destCode: "", //到达城市代码
         departDate: "" //出发日期字符串
       },
-      value1: ""
+      departData: [], //用于存储后台返回的出发城市数组
+      destData: [] //用于存储后台返回的到达城市数组
     };
   },
   methods: {
     // 点击Tab栏切换时触发
     handleSearchTab(index) {
-      if(index===1){
-        this.$alert('该功能暂未开通','提示')
+      if (index === 1) {
+        this.$alert("该功能暂未开通", "提示");
       }
+    },
+    // 失去焦点时触发 - 出发城市
+    handleSearchBlur() {
+      this.form.departCity = this.departData[0] ? this.departData[0].value : "";
+      this.form.departCode = this.departData[0] ? this.destData[0].sort : "";
+    },
+    // 失去焦点时触发 - 到达城市
+    handleArriveBlur() {
+      this.form.destCity = this.destData[0] ? this.destData[0].value : "";
+      this.form.destCode = this.destData[0] ? this.destData[0].sort : "";
     },
     // 搜索出发城市焦点时触发
     querySearchAsync(value, cb) {
@@ -114,9 +127,12 @@ export default {
           v.value = v.name.replace("市", "");
           // 将重新赋值的v放进data中
           arrDate.push(v);
-          // 默认选中第一个选项 防止用户输入后不选择
-          this.form.departCity = arrDate[0].value;
-          this.form.departCode = arrDate[0].sort;
+          // 默认选中第一个选项 防止用户输入后不选择 有bug
+          // this.form.departCity = arrDate[0].value;
+          // this.form.departCode = arrDate[0].sort;
+          // 将返回的城市数据赋给新数组
+          this.departData = arrDate.value;
+          this.departData = arrDate.sort;
         });
         // console.log(arrDate);
         // 将搜索的内容显示到下拉列表中
@@ -142,9 +158,12 @@ export default {
         data.forEach(v => {
           v.value = v.name.replace("市", "");
           arrDate.push(v);
-          // 默认选中第一个选项 防止用户输入后不选择
-          this.form.destCity = arrDate[0].value;
-          this.form.destCode = arrDate[0].sort;
+          // 默认选中第一个选项 防止用户输入后不选择  有bug
+          // this.form.destCity = arrDate[0].value;
+          // this.form.destCode = arrDate[0].sort;
+          // 将返回的城市数据赋给新数组
+          this.destData = arrDate.value;
+          this.destData = arrDate.sort;
         });
         cb(arrDate);
       });
@@ -173,16 +192,16 @@ export default {
     },
     // 选择交换城市时触发
     handleReverse() {
-      const {departCity,departCode,destCity,destCode} = this.form
-      this.form.departCity = destCity
-      this.form.departCode = destCode
-      this.form.destCity = departCity
-      this.form.destCode = departCode
+      const { departCity, departCode, destCity, destCode } = this.form;
+      this.form.departCity = destCity;
+      this.form.departCode = destCode;
+      this.form.destCity = departCity;
+      this.form.destCode = departCode;
     },
     // 确认提交时触发
     handleSubmit() {
       // 在提交表单之前要先做判断 不能为空
-      const {departCity,destCity,departDate} = this.form
+      const { departCity, destCity, departDate } = this.form;
       if (!departCity) {
         this.$alert("出发城市不能为空", "提示");
         return;
@@ -199,10 +218,20 @@ export default {
       // 实现页面的跳转 至 机票列表页
       this.$router.push({
         // 机票列表页的连接 '/air/flights'
-        path: '/air/flights',
+        path: "/air/flights",
         // url所携带的参数
         query: this.form
-      })
+      });
+
+      // 历史查询 将提交数据存入本地存储
+      const airs = JSON.parse(localStorage.getItem("airs") || `[]`);
+      airs.push(this.form);
+      localStorage.setItem("airs", JSON.stringify(airs));
+
+      this.$router.push({
+        path: "/air/flights",
+        query: this.form
+      });
     }
   }
 };
